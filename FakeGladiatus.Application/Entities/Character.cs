@@ -8,14 +8,20 @@ namespace FakeGladiatus.Application.Entities
     {
         public int Id { get; set; }
         public User User { get; set; }
-        public string Name { get; set; } = "Musti";
-        public int Hp { get; set; } = 100;
-        public int Power { get; set; } = 5;
-        public int Defense { get; set; } = 0;
-        public int Agility { get; set; } = 0;
+        public string Name { get; set; }
+        public int Hp { get; set; }
+        public int Level { get; set; }
+        public int Exp { get; set; }
+        public int Power { get; set; }
+        public int Defense { get; set; }
+        public int Agility { get; set; }
+        public int Intelligence { get; set; }
 
-        public int Intelligence { get; set; } = 0;
-
+        public int CharacterGainExp(int monsterExp)
+        {
+            Exp += monsterExp;
+            return Exp;
+        }
 
     }
 }

@@ -13,6 +13,7 @@ namespace FakeGladiatus.Application.Services
 {
     public class UserService : IUserService
     {
+        public static Dictionary<int, User> ActiveUsers = new Dictionary<int, User>();
         private readonly IRepository<UserDbEntity> _repository;
         public UserService(IRepository<UserDbEntity> repository)
         {
@@ -29,7 +30,6 @@ namespace FakeGladiatus.Application.Services
         public Character GenerateCharacter(int id, Character character)
         {
             var u = _repository.GetById(id);
-
             CharacterDbEntity characterDbEntity = new CharacterDbEntity
             {
                 Id = character.Id,
@@ -38,9 +38,12 @@ namespace FakeGladiatus.Application.Services
                 Hp = character.Hp,
                 Defense = character.Defense,
                 Agility = character.Agility,
-                Name = character.Name
+                Name = character.Name,
+                Level = 1,
+                Exp = 0
 
             };
+            ActiveUsers[id].Characters.Add(character);
             u.Characters ??= new List<CharacterDbEntity>();
             u.Characters.Add(characterDbEntity);
             _repository.Update(u);
@@ -60,25 +63,49 @@ namespace FakeGladiatus.Application.Services
                     Id = characterDb.Id,
                     Intelligence = characterDb.Intelligence,
                     Name = characterDb.Name,
-                    Power = characterDb.Power
+                    Power = characterDb.Power,
+                    Level = characterDb.Level,
+                    Exp = characterDb.Exp
+
                 };
             }
         }
         public string GetNickName(int userId)
         {
-            UserDbEntity u = _repository.GetAll().Include(x => x.Characters).FirstOrDefault(x => x.Id == userId);
+            var u = GetUser(userId);
+            if (ActiveUsers.ContainsKey(u.Id) == false)
+            {
+                ActiveUsers.Add(u.Id, u);
+            }
             return u.NickName;
         }
         public User GetUser(int userId)
         {
-            UserDbEntity uDbEntity = _repository.GetById(userId);
-            User u = new User();
-            u.Id = uDbEntity.Id;
-            u.NickName = uDbEntity.NickName;
-            u.UserName = uDbEntity.UserName;
-            u.Email = uDbEntity.Email;
+            if (ActiveUsers.ContainsKey(userId) == true)
+            {
+                return ActiveUsers[userId];
+            }
+            UserDbEntity uDbEntity = _repository.GetAll().Include(x => x.Characters).FirstOrDefault(x => x.Id == userId);
+            User u = new User
+            {
+                Id = uDbEntity.Id,
+                NickName = uDbEntity.NickName,
+                UserName = uDbEntity.UserName,
+                Email = uDbEntity.Email,
+
+            };
+            u.Characters = uDbEntity.Characters.Select(x => new Character { Agility = x.Agility, Defense = x.Agility, Exp = x.Exp, Hp = x.Hp, Id = x.Id, Intelligence = x.Intelligence, Level = x.Level, Name = x.Name, Power = x.Power, User = u }).ToList();
 
             return u;
+        }
+        public void ChangeCurrentCharacter(int userId, int charId)
+        {
+            if (ActiveUsers.ContainsKey(userId) == false)
+            {
+                ActiveUsers.Add(userId, GetUser(userId));
+            }
+            var currentUser = ActiveUsers[userId];
+            currentUser.SelectedCharacter = currentUser.Characters.FirstOrDefault(x=>x.Id == charId);
         }
     }
 }

@@ -13,5 +13,6 @@ namespace FakeGladiatus.Application.Services.Interfaaces
         public IEnumerable<Character> GetCharacters(int userId);
         public string GetNickName(int userId);
         public User GetUser(int userId);
+        public void ChangeCurrentCharacter(int userId, int charId);
     }
 }

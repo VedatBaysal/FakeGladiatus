@@ -8,4 +8,8 @@
     <ProjectReference Include="..\FakeGladiatus.Application\FakeGladiatus.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Monster\" />
+  </ItemGroup>
+
 </Project>

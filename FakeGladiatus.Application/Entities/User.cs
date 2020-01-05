@@ -11,5 +11,7 @@ namespace FakeGladiatus.Application.Entities
         public string UserName { get; set; }
         public string NickName { get; set; }
         public string Email { get; set; }
+        public Character SelectedCharacter { get; set; }
+        public ICollection<Character> Characters { get; set; }
     }
 }

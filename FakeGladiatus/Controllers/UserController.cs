@@ -74,12 +74,14 @@ namespace FakeGladiatus.Controllers
         {
             if (HttpContext.User.Identity is ClaimsIdentity claimsIdentity)
             {
-                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-
-                var email = claimsIdentity.FindFirst(ClaimTypes.Email).Value;
-                IEnumerable<Character> u = _userService.GetCharacters(Convert.ToInt32(userId));
-                IEnumerable<CharacterReadModel> models = _mapper.Map<IEnumerable<CharacterReadModel>>(u);
-
+                string userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                User user = _userService.GetUser(Convert.ToInt32(userId));
+                IEnumerable<CharacterReadModel> models = _mapper.Map<IEnumerable<CharacterReadModel>>(user.Characters);
+                if(user.SelectedCharacter != null)
+                {
+                    CharacterReadModel selectedChar = models.FirstOrDefault(x => x.Id == user.SelectedCharacter.Id);
+                    selectedChar.IsActive = true;
+                }
                 return Ok(models);
             } return BadRequest();
             //List<CharacterReadModel> characterReadModels = new List<CharacterReadModel>();
@@ -98,6 +100,18 @@ namespace FakeGladiatus.Controllers
             //    characterReadModels.Add(crm);
             //}
             //return Ok(characterReadModels);
+        }
+        [HttpGet("character/{id}/change")]
+        public IActionResult ChangeCharacter(int id)
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity claimsIdentity)
+            {
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                _userService.ChangeCurrentCharacter(Convert.ToInt32(userId),id);
+
+                return Ok();
+            }
+            return BadRequest();
         }
         [HttpGet("nickname")]
         public IActionResult GetNickName()

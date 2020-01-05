@@ -13,8 +13,10 @@ namespace FakeGladiatus.Shared.Models.Character
         public int Power { get; set; }
         public int Defense { get; set; }
         public int Agility { get; set; }
-
+        public int Level { get; set; }
+        public int Exp { get; set; }
         public int Intelligence { get; set; } 
+        public bool IsActive { get; set; }
 
     }
 }

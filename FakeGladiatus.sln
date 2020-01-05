@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FakeGladiatus.Shared", "Fak
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Identity", "Identity\Identity.csproj", "{7817FA52-7C86-42B0-B3E7-FB3427982848}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeGladiatus.UI", "FakeGladiatus.UI\FakeGladiatus.UI.csproj", "{94954B5C-BBE3-43B4-9050-086C209F1286}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{7817FA52-7C86-42B0-B3E7-FB3427982848}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7817FA52-7C86-42B0-B3E7-FB3427982848}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7817FA52-7C86-42B0-B3E7-FB3427982848}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94954B5C-BBE3-43B4-9050-086C209F1286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94954B5C-BBE3-43B4-9050-086C209F1286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94954B5C-BBE3-43B4-9050-086C209F1286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94954B5C-BBE3-43B4-9050-086C209F1286}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

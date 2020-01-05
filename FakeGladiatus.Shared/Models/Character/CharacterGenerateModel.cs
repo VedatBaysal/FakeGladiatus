@@ -12,7 +12,6 @@ namespace FakeGladiatus.Shared.Models.Character
         public string Power { get; set; }
         public string Defence { get; set; }
         public string Agility { get; set; }
-
         public string Intelligence { get; set; }
     }
 }
