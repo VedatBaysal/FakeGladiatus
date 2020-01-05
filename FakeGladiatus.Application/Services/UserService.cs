@@ -64,5 +64,21 @@ namespace FakeGladiatus.Application.Services
                 };
             }
         }
+        public string GetNickName(int userId)
+        {
+            UserDbEntity u = _repository.GetAll().Include(x => x.Characters).FirstOrDefault(x => x.Id == userId);
+            return u.NickName;
+        }
+        public User GetUser(int userId)
+        {
+            UserDbEntity uDbEntity = _repository.GetById(userId);
+            User u = new User();
+            u.Id = uDbEntity.Id;
+            u.NickName = uDbEntity.NickName;
+            u.UserName = uDbEntity.UserName;
+            u.Email = uDbEntity.Email;
+
+            return u;
+        }
     }
 }

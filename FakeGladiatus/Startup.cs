@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using FakeGladiatus.Application.Entities.DbEntities;
 using FakeGladiatus.Application.Repositories;
 using FakeGladiatus.Application.Services;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using IdentityServer4.AccessTokenValidation;
 
 namespace FakeGladiatus
 {
@@ -31,11 +33,17 @@ namespace FakeGladiatus
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<FakeGladiatusDbContext>(x => x.UseSqlServer("Data Source=.;Initial Catalog=FakeGladiatus;Integrated Security=True"));
             services.AddDbContext<DbContext, FakeGladiatusDbContext>(x => x.UseSqlServer("Data Source=.;Initial Catalog=FakeGladiatus;Integrated Security=True"));
             services.AddScoped<IRepository<UserDbEntity>, BaseRepository<UserDbEntity>>();
             services.AddScoped<IUserService, UserService>();
             services.AddCors();
+            services.AddAutoMapper(typeof(MapperAutoProfile));
+            services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = "http://192.168.10.33:5051";
+                options.RequireHttpsMetadata = false;
+                options.Audience = "gladiatusapi";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,12 +52,14 @@ namespace FakeGladiatus
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseEndpoints(endpoints =>

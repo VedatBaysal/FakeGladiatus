@@ -11,5 +11,7 @@ namespace FakeGladiatus.Application.Services.Interfaaces
         public User CheckForLogin(string userName, string password);
         public Character GenerateCharacter(int id, Character character);
         public IEnumerable<Character> GetCharacters(int userId);
+        public string GetNickName(int userId);
+        public User GetUser(int userId);
     }
 }
