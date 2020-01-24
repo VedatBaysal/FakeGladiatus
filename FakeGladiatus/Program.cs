@@ -21,7 +21,7 @@ namespace FakeGladiatus
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 
-            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
+            WebHost.CreateDefaultBuilder(args).UseStartup<Startup>(); 
 
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
