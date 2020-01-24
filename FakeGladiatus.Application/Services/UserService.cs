@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using FakeGladiatus.Application.Manager;
 
 namespace FakeGladiatus.Application.Services
 {
@@ -48,6 +49,10 @@ namespace FakeGladiatus.Application.Services
             u.Characters.Add(characterDbEntity);
             _repository.Update(u);
             return character;
+        }
+        public IEnumerable<User> GetUsers()
+        {
+            return _repository.GetAll().Select(x => x.Build());
         }
         public IEnumerable<Character> GetCharacters(int userId)
         {
@@ -107,5 +112,11 @@ namespace FakeGladiatus.Application.Services
             var currentUser = ActiveUsers[userId];
             currentUser.SelectedCharacter = currentUser.Characters.FirstOrDefault(x=>x.Id == charId);
         }
+        public void UpdateCharacter (Character character)
+        {
+          CharacterDbEntity characterDb = character.Build(true);
+            _repository.Update(characterDb.User);
+        }
+
     }
 }

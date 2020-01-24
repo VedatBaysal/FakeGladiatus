@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using IdentityServer4.AccessTokenValidation;
+using FakeGladiatus.Application.Manager;
 
 namespace FakeGladiatus
 {
@@ -32,15 +33,22 @@ namespace FakeGladiatus
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var configuration = Configuration.Get<AppSettings>();
             services.AddControllers();
-            services.AddDbContext<DbContext, FakeGladiatusDbContext>(x => x.UseSqlServer("Data Source=.;Initial Catalog=FakeGladiatus;Integrated Security=True"));
+            services.AddSignalR();
+            services.AddDbContext<DbContext, FakeGladiatusDbContext>(x => x.UseSqlServer(configuration.DatabaseConnectionString));
             services.AddScoped<IRepository<UserDbEntity>, BaseRepository<UserDbEntity>>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRepository<CharacterDbEntity>, BaseRepository<CharacterDbEntity>>();
+            services.AddScoped<IRepository<NotificationDbEntity>, BaseRepository<NotificationDbEntity>>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IAttackSystemService, AttackSystemService>();
+            services.AddScoped<FightManager>();
             services.AddCors();
             services.AddAutoMapper(typeof(MapperAutoProfile));
             services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
             {
-                options.Authority = "http://192.168.10.33:5051";
+                options.Authority = configuration.AuthorizationAddress;
                 options.RequireHttpsMetadata = false;
                 options.Audience = "gladiatusapi";
             });
@@ -58,13 +66,14 @@ namespace FakeGladiatus
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/NotificationHub");
             });
         }
     }

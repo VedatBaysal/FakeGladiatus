@@ -22,5 +22,6 @@ namespace FakeGladiatus.Application.Entities.DbEntities
         }
         public DbSet<UserDbEntity> Users { get; set; }
         public DbSet<CharacterDbEntity> Characters { get; set; }
+        public DbSet<NotificationDbEntity> Notifications { get; set; }
     }
 }

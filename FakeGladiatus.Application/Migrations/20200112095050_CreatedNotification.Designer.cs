@@ -4,14 +4,16 @@ using FakeGladiatus.Application.Entities.DbEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FakeGladiatus.Application.Migrations
 {
     [DbContext(typeof(FakeGladiatusDbContext))]
-    partial class FakeGladiatusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200112095050_CreatedNotification")]
+    partial class CreatedNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,10 +69,10 @@ namespace FakeGladiatus.Application.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AttackerCharId")
+                    b.Property<int>("AttackerCharId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AttackerUserId")
+                    b.Property<int>("AttackerUserId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("FightTime")
@@ -79,21 +81,13 @@ namespace FakeGladiatus.Application.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("TargetCharId")
+                    b.Property<int>("TargetCharId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TargetUserId")
+                    b.Property<int>("TargetUserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AttackerCharId");
-
-                    b.HasIndex("AttackerUserId");
-
-                    b.HasIndex("TargetCharId");
-
-                    b.HasIndex("TargetUserId");
 
                     b.ToTable("Notifications");
                 });
@@ -127,25 +121,6 @@ namespace FakeGladiatus.Application.Migrations
                     b.HasOne("FakeGladiatus.Application.Entities.DbEntities.UserDbEntity", "User")
                         .WithMany("Characters")
                         .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("FakeGladiatus.Application.Entities.DbEntities.NotificationDbEntity", b =>
-                {
-                    b.HasOne("FakeGladiatus.Application.Entities.DbEntities.CharacterDbEntity", "AttackerChar")
-                        .WithMany()
-                        .HasForeignKey("AttackerCharId");
-
-                    b.HasOne("FakeGladiatus.Application.Entities.DbEntities.UserDbEntity", "AttackerUser")
-                        .WithMany()
-                        .HasForeignKey("AttackerUserId");
-
-                    b.HasOne("FakeGladiatus.Application.Entities.DbEntities.CharacterDbEntity", "TargetChar")
-                        .WithMany()
-                        .HasForeignKey("TargetCharId");
-
-                    b.HasOne("FakeGladiatus.Application.Entities.DbEntities.UserDbEntity", "TargetUser")
-                        .WithMany()
-                        .HasForeignKey("TargetUserId");
                 });
 #pragma warning restore 612, 618
         }

@@ -23,10 +23,14 @@ namespace FakeGladiatus.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
-        public UserController(IUserService userService, IMapper mapper)
+        private readonly INotificationService _notificationService;
+        private readonly IAttackSystemService _attackSystemService;
+        public UserController(IUserService userService, IMapper mapper, IAttackSystemService attackSystemService,INotificationService notificationService)
         {
             _userService = userService;
             _mapper = mapper;
+            _attackSystemService = attackSystemService;
+            _notificationService = notificationService;
         }
         [HttpPost]
         [AllowAnonymous]
@@ -56,17 +60,6 @@ namespace FakeGladiatus.Controllers
                 return Ok(_userService.GenerateCharacter(Convert.ToInt32(userId), models));
             }
             return BadRequest();
-            //Character c = new Character
-            //{
-            //    Agility = Convert.ToInt32(characterModel.Agility),
-            //    Defense = Convert.ToInt32(characterModel.Defence),
-            //    Hp = Convert.ToInt32(characterModel.Hp),
-            //    Intelligence = Convert.ToInt32(characterModel.Intelligence),
-            //    Name = characterModel.Name,
-            //    Power = Convert.ToInt32(characterModel.Power)
-            //};
-
-            //return Ok(_userService.GenerateCharacter(Convert.ToInt32(characterModel.UserId), c));
         }
         [HttpGet("characters")]
         public IActionResult GetCharacters()
@@ -75,32 +68,30 @@ namespace FakeGladiatus.Controllers
             if (HttpContext.User.Identity is ClaimsIdentity claimsIdentity)
             {
                 string userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
-                User user = _userService.GetUser(Convert.ToInt32(userId));
-                IEnumerable<CharacterReadModel> models = _mapper.Map<IEnumerable<CharacterReadModel>>(user.Characters);
-                if(user.SelectedCharacter != null)
-                {
-                    CharacterReadModel selectedChar = models.FirstOrDefault(x => x.Id == user.SelectedCharacter.Id);
-                    selectedChar.IsActive = true;
-                }
+                IEnumerable<CharacterReadModel> models = GetCharacters(Convert.ToInt32(userId));
                 return Ok(models);
-            } return BadRequest();
-            //List<CharacterReadModel> characterReadModels = new List<CharacterReadModel>();
-            //foreach (var item in u)
-            //{
-            //    CharacterReadModel crm = new CharacterReadModel
-            //    {
-            //        Agility = item.Agility,
-            //        Defense = item.Defense,
-            //        Hp = item.Hp,
-            //        Id = item.Id,
-            //        Intelligence = item.Intelligence,
-            //        Name = item.Name,
-            //        Power = item.Power
-            //    };
-            //    characterReadModels.Add(crm);
-            //}
-            //return Ok(characterReadModels);
+            }
+            return BadRequest();
         }
+        [HttpGet("{id}/characters")]
+        public IActionResult GetUsersCharacters(int id)
+        {
+            return Ok(GetCharacters(id));
+        }
+
+        private IEnumerable<CharacterReadModel> GetCharacters(int userId)
+        {
+            User user = _userService.GetUser(Convert.ToInt32(userId));
+            IEnumerable<CharacterReadModel> models = _mapper.Map<IEnumerable<CharacterReadModel>>(user.Characters);
+            if (user.SelectedCharacter != null)
+            {
+                CharacterReadModel selectedChar = models.FirstOrDefault(x => x.Id == user.SelectedCharacter.Id);
+                selectedChar.IsActive = true;
+            }
+
+            return models;
+        }
+
         [HttpGet("character/{id}/change")]
         public IActionResult ChangeCharacter(int id)
         {
@@ -126,7 +117,40 @@ namespace FakeGladiatus.Controllers
             }
             return BadRequest();
         }
+        [HttpGet("getenemies")]
+        public IActionResult GetTargetUsers()
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity claimsIdentity)
+            {
+                var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                IEnumerable<User> targetUsers = _userService.GetUsers().Where(x => x.Id != Convert.ToInt32(userId));
+                IEnumerable<EnemyUserReadModel> models = _mapper.Map<IEnumerable<EnemyUserReadModel>>(targetUsers);
+                return Ok(models);
+            }
 
+            return BadRequest();
+        }
+        [HttpPost("FightCharacters")]
+        public IActionResult FightCharacters([FromBody] FightCharacterCreateModel fightCharacterCreateModel)
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity claimsIdentity)
+            {
+                int userId = Convert.ToInt32(claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value);
+                int AttackerCharId = fightCharacterCreateModel.AttackerCharId;
+                int TargetUserId = fightCharacterCreateModel.TargetUserId;
+                int TargetCharId = fightCharacterCreateModel.TargetCharId;
+                var (attacker,target) = _attackSystemService.StartFight(userId, AttackerCharId, TargetUserId, TargetCharId);
+                FightResultReadModel model = new FightResultReadModel
+                {
+                    attackerChar = _mapper.Map<CharacterReadModel>(attacker),
+                    targetChar = _mapper.Map<CharacterReadModel>(target)
+                };
+                _notificationService.CreateNatificationForFight(userId, AttackerCharId, TargetUserId, TargetCharId, DateTime.Now.ToString("yyyy/MM/dd"));
+                return Ok(model);
+            }
+
+            return BadRequest();
+        }
         [HttpGet("auth")]
         public IActionResult TestValidator()
         {

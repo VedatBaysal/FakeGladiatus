@@ -4,14 +4,16 @@ using FakeGladiatus.Application.Entities.DbEntities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FakeGladiatus.Application.Migrations
 {
     [DbContext(typeof(FakeGladiatusDbContext))]
-    partial class FakeGladiatusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200112095507_UpdatedNotification")]
+    partial class UpdatedNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +81,7 @@ namespace FakeGladiatus.Application.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("TargetCharId")
+                    b.Property<int?>("TargetCharIdId")
                         .HasColumnType("int");
 
                     b.Property<int?>("TargetUserId")
@@ -91,7 +93,7 @@ namespace FakeGladiatus.Application.Migrations
 
                     b.HasIndex("AttackerUserId");
 
-                    b.HasIndex("TargetCharId");
+                    b.HasIndex("TargetCharIdId");
 
                     b.HasIndex("TargetUserId");
 
@@ -139,9 +141,9 @@ namespace FakeGladiatus.Application.Migrations
                         .WithMany()
                         .HasForeignKey("AttackerUserId");
 
-                    b.HasOne("FakeGladiatus.Application.Entities.DbEntities.CharacterDbEntity", "TargetChar")
+                    b.HasOne("FakeGladiatus.Application.Entities.DbEntities.CharacterDbEntity", "TargetCharId")
                         .WithMany()
-                        .HasForeignKey("TargetCharId");
+                        .HasForeignKey("TargetCharIdId");
 
                     b.HasOne("FakeGladiatus.Application.Entities.DbEntities.UserDbEntity", "TargetUser")
                         .WithMany()

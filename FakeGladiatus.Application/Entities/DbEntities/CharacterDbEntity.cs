@@ -1,10 +1,11 @@
-﻿using System;
+﻿using FakeGladiatus.Application.Entities.DbEntities.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FakeGladiatus.Application.Entities.DbEntities
 {
-    public class CharacterDbEntity
+    public class CharacterDbEntity : IDbEntity
     {
         public int Id { get; set; }
         public UserDbEntity User { get; set; }
